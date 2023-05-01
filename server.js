@@ -21,8 +21,9 @@ const db = require("./app/models");
 const Role = db.role;
 const dbConfig = db.dbConfig;
 
+const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
 db.mongoose
-    .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+    .connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
