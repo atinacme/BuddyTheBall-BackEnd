@@ -59,7 +59,7 @@ const createClass = async (req, res) => {
 
 const getClasses = async (req, res) => {
     try {
-        const data = await Class.find()
+        Class.find()
             .populate("schedules", "-__v")
             .populate("school", "-__v")
             .populate({
@@ -70,12 +70,9 @@ const getClasses = async (req, res) => {
                 }
             })
             .exec(function (err, data) {
-                if (err) return res.status(404).send({ message: "Not found Customer with id " + id });
+                if (err) return res.status(404).send({ message: "Not found Class " });
                 res.send(data);
             });
-        if (data.length === 0)
-            res.status(404).send({ message: 'No Class found' });
-        else res.status(200).send(data);
     } catch (error) {
         console.log(error);
     }
