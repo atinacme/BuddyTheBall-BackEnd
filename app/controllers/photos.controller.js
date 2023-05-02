@@ -9,7 +9,7 @@ const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://buddytheball-backend.herokuapp.com/api/files/" : "http://localhost:8080/api/files/";
-const uri = process.env.NODE_ENV === "production" ? `mongodb+srv://huseyinpolat:sqSUks1jU9CYk9p1@buddytheballcluster.ri1biyt.mongodb.net/?retryWrites=true&w=majority` : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
+const uri = process.env.NODE_ENV === "production" ? `mongodb+srv://huseyinpolat@buddytheballcluster.ri1biyt.mongodb.net/?retryWrites=true&w=majority` : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
 const mongoClient = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
