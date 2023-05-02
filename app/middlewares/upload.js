@@ -5,7 +5,7 @@ const db = require("../models");
 const Config = db.dbConfig;
 
 var storage = new GridFsStorage({
-    url: `mongodb://${Config.HOST}:${Config.PORT}/${Config.DB}`,
+    url: process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${Config.HOST}:${Config.PORT}/${Config.DB}`,
     options: { useNewUrlParser: true, useUnifiedTopology: true },
     file: (req, file) => {
         const match = ["image/png", "image/jpeg"];
