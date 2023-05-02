@@ -5,15 +5,15 @@ const Coach = db.coach;
 const Customer = db.customer;
 const Photos = db.photos;
 const RegionalManager = db.regionalmanager;
-const MongoClient = require("mongodb").MongoClient;
-const GridFSBucket = require("mongodb").GridFSBucket;
+// const MongoClient = require("mongodb").MongoClient;
+// const GridFSBucket = require("mongodb").GridFSBucket;
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://buddytheball-backend.herokuapp.com/api/files/" : "http://localhost:8080/api/files/";
-const uri = process.env.NODE_ENV === "production" ? `mongodb+srv://huseyinpolat@buddytheballcluster.ri1biyt.mongodb.net/?retryWrites=true&w=majority` : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
-const mongoClient = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+// const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
+// const mongoClient = new MongoClient(uri, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// });
 
 const uploadCustomerPhotos = async (req, res) => {
     try {
