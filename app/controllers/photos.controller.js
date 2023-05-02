@@ -10,7 +10,10 @@ const GridFSBucket = require("mongodb").GridFSBucket;
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://buddytheball-backend.herokuapp.com/api/files/" : "http://localhost:8080/api/files/";
 const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
-const mongoClient = new MongoClient(uri);
+const mongoClient = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 const uploadCustomerPhotos = async (req, res) => {
     try {
