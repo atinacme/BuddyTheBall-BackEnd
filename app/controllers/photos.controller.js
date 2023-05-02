@@ -5,15 +5,12 @@ const Coach = db.coach;
 const Customer = db.customer;
 const Photos = db.photos;
 const RegionalManager = db.regionalmanager;
-// const MongoClient = require("mongodb").MongoClient;
-// const GridFSBucket = require("mongodb").GridFSBucket;
+const MongoClient = require("mongodb").MongoClient;
+const GridFSBucket = require("mongodb").GridFSBucket;
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://buddytheball-backend.herokuapp.com/api/files/" : "http://localhost:8080/api/files/";
-// const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
-// const mongoClient = new MongoClient(uri, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// });
+const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
+const mongoClient = new MongoClient(uri);
 
 const uploadCustomerPhotos = async (req, res) => {
     try {
@@ -228,6 +225,13 @@ const getAwardPhotos = async (req, res) => {
     try {
         var fileInfos = [];
         var photos = await Photos.find({ upload_for: 'award' });
+        await mongoClient.connect();
+
+        const database = mongoClient.db(dbConfig.database);
+        const bucket = new GridFSBucket(database, {
+            bucketName: dbConfig.imgBucket,
+        });
+
 
         if ((photos.length) === 0) {
             return res.status(500).send({
@@ -236,14 +240,16 @@ const getAwardPhotos = async (req, res) => {
         }
 
         photos.forEach((doc) => {
-            fileInfos.push({
-                _id: doc._id,
-                photo_id: doc.photo_id,
-                originalname: doc.originalname,
-                name: doc.originalname.replace(".png", ""),
-                url: baseUrl + doc.filename,
-                messages: doc.messages
-            });
+            bucket.find({ filename: doc.filename }).toArray((err, files) => {
+                fileInfos.push({
+                    _id: doc._id,
+                    photo_id: doc.photo_id,
+                    originalname: doc.originalname,
+                    name: doc.originalname.replace(".png", ""),
+                    url: baseUrl + doc.filename,
+                    messages: files[0]
+                });
+            })
         });
         return res.status(200).send(fileInfos);
     } catch (error) {
