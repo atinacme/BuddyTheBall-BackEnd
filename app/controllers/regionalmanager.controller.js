@@ -119,7 +119,8 @@ exports.updateRegionalManager = (req, res) => {
 };
 
 exports.deleteRegionalManager = (req, res) => {
-    const id = req.params.id;
+    const id = req.body.id;
+    const userId = req.body.user_id;
 
     RegionalManager.findByIdAndRemove(id)
         .then(data => {
@@ -128,9 +129,18 @@ exports.deleteRegionalManager = (req, res) => {
                     message: `Cannot delete Regional Manager with id=${id}. Maybe Regional Manager was not found!`
                 });
             } else {
-                res.send({
-                    message: "Regional Manager was deleted successfully!"
-                });
+                User.findByIdAndRemove(userId)
+                    .then(data => {
+                        if (!data) {
+                            res.status(404).send({
+                                message: `Cannot delete User with id=${id}. Maybe User was not found!`
+                            });
+                        } else {
+                            res.send({
+                                message: "Regional Manager was deleted successfully!"
+                            });
+                        }
+                    })
             }
         })
         .catch(err => {

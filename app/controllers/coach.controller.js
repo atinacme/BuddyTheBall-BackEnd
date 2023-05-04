@@ -9,14 +9,24 @@ exports.getCoaches = (req, res) => {
     Coach.find()
         .populate("assigned_schools", "-__v")
         .populate("schedules", "-__v")
-        .then(data => {
+        .populate([{
+            path: 'classes', populate: {
+                path: 'schedules',
+                model: 'Schedule',
+                populate: {
+                    path: 'coaches',
+                    model: 'Coach'
+                },
+            },
+        }, {
+            path: 'classes', populate: {
+                path: 'school',
+                model: 'School'
+            },
+        }])
+        .exec(function (err, data) {
+            if (err) return res.status(404).send({ message: "Not found Coaches" });
             res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving coaches."
-            });
         });
 };
 
@@ -127,7 +137,8 @@ exports.updateCoach = (req, res) => {
 };
 
 exports.deleteCoach = (req, res) => {
-    const id = req.params.id;
+    const id = req.body.id;
+    const userId = req.body.user_id;
 
     Coach.findByIdAndRemove(id)
         .then(data => {
@@ -136,9 +147,18 @@ exports.deleteCoach = (req, res) => {
                     message: `Cannot delete Coach with id=${id}. Maybe Coach was not found!`
                 });
             } else {
-                res.send({
-                    message: "Coach was deleted successfully!"
-                });
+                User.findByIdAndRemove(userId)
+                    .then(data => {
+                        if (!data) {
+                            res.status(404).send({
+                                message: `Cannot delete User with id=${id}. Maybe User was not found!`
+                            });
+                        } else {
+                            res.send({
+                                message: "Coach was deleted successfully!"
+                            });
+                        }
+                    })
             }
         })
         .catch(err => {

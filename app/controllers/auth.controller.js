@@ -11,7 +11,6 @@ const RegionalManager = db.regionalmanager;
 const Class = db.class;
 
 exports.signup = (req, res) => {
-    console.log("req--->", req.body);
     const user = new User({
         // username: req.body.username,
         email: req.body.email,
@@ -27,27 +26,21 @@ exports.signup = (req, res) => {
             if (req.body.roles[0] === "customer") {
                 var children_data = [];
                 req.body.children_data.forEach(element => {
-                    console.log("cust--->", element);
                     const current_award = {
                         name: element.current_award ? element.current_award.name : null,
                         image: element.current_award ? element.current_award.image : null
                     };
-                    // console.log("sdfce--->", data);
                     children_data.push({
                         player_name: element.player_name,
                         player_age: element.player_age,
                         wristband_level: element.wristband_level ? element.wristband_level : null,
                         class: element.class,
-                        // school: element.school,
-                        // coach: element.coach,
-                        // schedule: element.schedule,
                         handed: element.handed,
                         num_buddy_books_read: element.num_buddy_books_read,
                         jersey_size: element.jersey_size ? element.jersey_size : null,
                         current_award: current_award
                     });
                 });
-                console.log("push--->", children_data);
                 const customer = new Customer({
                     user_id: user._id,
                     email: req.body.email,
@@ -68,13 +61,11 @@ exports.signup = (req, res) => {
                     var schoolsList = [];
                     req.body.children_data.forEach(element => {
                         Class.findById(element.class).then(data => {
-                            console.log("gdsfds--->", data)
                             schoolsList.push(data.school);
                         })
                     });
                     setTimeout(() => {
                         const school_arr = schoolsList.filter((item, index) => schoolsList.indexOf(item) === index);
-                        console.log("xcdgs--->", schoolsList, school_arr);
                         school_arr.forEach(v => {
                             School.findByIdAndUpdate(v, {
                                 $push: {
@@ -165,7 +156,6 @@ exports.signup = (req, res) => {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    console.log("dgdg--->", roles);
 
                     user.roles = roles.map(role => role._id);
                     user.save(err => {
@@ -184,7 +174,6 @@ exports.signup = (req, res) => {
                     res.status(500).send({ message: err });
                     return;
                 }
-                console.log("qaws--->", role);
 
                 user.roles = [role._id];
                 user.save(err => {
@@ -237,7 +226,6 @@ exports.signin = (req, res) => {
             for (let i = 0; i < user.roles.length; i++) {
                 authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
             }
-            console.log("stgsg--->", user);
 
             if (authorities[0] === "ROLE_COACH") {
                 Coach.findOne({
@@ -297,7 +285,6 @@ exports.signin = (req, res) => {
                 RegionalManager.findOne({
                     email: req.body.email
                 })
-                    // .populate("school coach", "-__v")
                     .exec((err, regionalmanager_data) => {
                         if (err) {
                             res.status(500).send({ message: err });

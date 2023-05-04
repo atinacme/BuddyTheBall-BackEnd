@@ -19,5 +19,5 @@ module.exports = function (app) {
 
     app.put("/api/updateRegionalManager/:userId/:regionalManagerId", controller.updateRegionalManager);
 
-    app.delete("/api/deleteRegionalManager/:id", controller.deleteRegionalManager);
+    app.delete("/api/deleteRegionalManager", controller.deleteRegionalManager);
 };

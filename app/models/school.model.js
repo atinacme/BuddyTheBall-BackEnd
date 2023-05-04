@@ -5,7 +5,9 @@ const School = mongoose.model(
     new mongoose.Schema({
         school_name: String,
         region: String,
-        assigned_day: String,
+        director_name: String,
+        director_email: String,
+        director_phone: String,
         address: String,
         customers: [
             {

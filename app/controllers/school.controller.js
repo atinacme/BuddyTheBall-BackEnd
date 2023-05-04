@@ -1,5 +1,7 @@
 const db = require("../models");
 const School = db.school;
+const Class = db.class;
+const Schedule = db.schedule;
 
 exports.createSchool = (req, res) => {
     if (!req.body.school_name) {
@@ -11,7 +13,9 @@ exports.createSchool = (req, res) => {
     const school = new School({
         school_name: req.body.school_name,
         region: req.body.region,
-        assigned_day: req.body.assigned_day,
+        director_name: req.body.director_name,
+        director_email: req.body.director_email,
+        director_phone: req.body.director_phone,
         address: req.body.address
     });
 
@@ -108,8 +112,9 @@ exports.updateSchool = (req, res) => {
 };
 
 exports.deleteSchool = (req, res) => {
-    const id = req.params.id;
-
+    const id = req.body.id;
+    const classes = req.body.classes;
+    const schedules = req.body.schedules;
     School.findByIdAndRemove(id)
         .then(data => {
             if (!data) {
@@ -117,6 +122,12 @@ exports.deleteSchool = (req, res) => {
                     message: `Cannot delete School with id=${id}. Maybe School was not found!`
                 });
             } else {
+                schedules.forEach(v => {
+                    Schedule.findByIdAndRemove(v).then()
+                })
+                classes.forEach(u => {
+                    Class.findByIdAndRemove(u).then()
+                })
                 res.send({
                     message: "School was deleted successfully!"
                 });

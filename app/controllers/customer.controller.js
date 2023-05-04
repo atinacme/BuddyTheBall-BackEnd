@@ -153,7 +153,8 @@ exports.findCustomerWithSlot = (req, res) => {
 };
 
 exports.deleteCustomer = (req, res) => {
-    const id = req.params.id;
+    const id = req.body.id;
+    const userId = req.body.user_id;
 
     Customer.findByIdAndRemove(id)
         .then(data => {
@@ -162,9 +163,18 @@ exports.deleteCustomer = (req, res) => {
                     message: `Cannot delete Customer with id=${id}. Maybe Customer was not found!`
                 });
             } else {
-                res.send({
-                    message: "Customer was deleted successfully!"
-                });
+                User.findByIdAndRemove(userId)
+                    .then(data => {
+                        if (!data) {
+                            res.status(404).send({
+                                message: `Cannot delete User with id=${id}. Maybe User was not found!`
+                            });
+                        } else {
+                            res.send({
+                                message: "Customer was deleted successfully!"
+                            });
+                        }
+                    })
             }
         })
         .catch(err => {

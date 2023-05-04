@@ -225,13 +225,6 @@ const getAwardPhotos = async (req, res) => {
     try {
         var fileInfos = [];
         var photos = await Photos.find({ upload_for: 'award' });
-        await mongoClient.connect();
-
-        const database = mongoClient.db(dbConfig.database);
-        const bucket = new GridFSBucket(database, {
-            bucketName: dbConfig.imgBucket,
-        });
-
 
         if ((photos.length) === 0) {
             return res.status(500).send({
@@ -240,16 +233,14 @@ const getAwardPhotos = async (req, res) => {
         }
 
         photos.forEach((doc) => {
-            bucket.find({ filename: doc.filename }).toArray((err, files) => {
-                fileInfos.push({
-                    _id: doc._id,
-                    photo_id: doc.photo_id,
-                    originalname: doc.originalname,
-                    name: doc.originalname.replace(".png", ""),
-                    url: baseUrl + doc.filename,
-                    messages: files[0]
-                });
-            })
+            fileInfos.push({
+                _id: doc._id,
+                photo_id: doc.photo_id,
+                originalname: doc.originalname,
+                name: doc.originalname.replace(".png", ""),
+                url: baseUrl + doc.filename,
+                messages: doc.messages
+            });
         });
         return res.status(200).send(fileInfos);
     } catch (error) {

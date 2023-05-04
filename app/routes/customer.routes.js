@@ -19,5 +19,5 @@ module.exports = function (app) {
 
     app.put("/api/updateCustomer/:userId/:customerId", controller.updateCustomer);
 
-    app.delete("/api/deleteCustomer/:id", controller.deleteCustomer);
+    app.delete("/api/deleteCustomer", controller.deleteCustomer);
 };
