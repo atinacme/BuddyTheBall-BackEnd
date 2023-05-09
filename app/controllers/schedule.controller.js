@@ -137,6 +137,28 @@ const updateSchedule = async (req, res) => {
     }
 };
 
+const deleteSchedule = async (req, res) => {
+    const id = req.body.id;
+
+    Schedule.findByIdAndRemove(id)
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot delete Schedule with id=${id}. Maybe Schedule was not found!`
+                });
+            } else {
+                res.send({
+                    message: "Schedule was deleted successfully!"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Schedule with id=" + id
+            });
+        });
+};
+
 module.exports = {
     createSchedule,
     getSchedules,
@@ -144,5 +166,6 @@ module.exports = {
     getScheduleByRegionalManagerAndSchool,
     getScheduleByCoach,
     getScheduleCreatedByUserId,
-    updateSchedule
+    updateSchedule,
+    deleteSchedule
 };

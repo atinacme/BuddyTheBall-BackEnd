@@ -150,11 +150,34 @@ const updateClass = async (req, res) => {
     }
 };
 
+const deleteClass = async (req, res) => {
+    const id = req.body.id;
+
+    Class.findByIdAndRemove(id)
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot delete Region with id=${id}. Maybe Region was not found!`
+                });
+            } else {
+                res.send({
+                    message: "Region was deleted successfully!"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Region with id=" + id
+            });
+        });
+};
+
 module.exports = {
     createClass,
     getClasses,
     getClassCreatedByUserId,
     getCoachClasses,
     getScheduleByCoach,
-    updateClass
+    updateClass,
+    deleteClass
 };

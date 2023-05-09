@@ -81,7 +81,7 @@ exports.updateRegion = (req, res) => {
 };
 
 exports.deleteRegion = (req, res) => {
-    const id = req.params.id;
+    const id = req.body.id;
 
     Region.findByIdAndRemove(id)
         .then(data => {

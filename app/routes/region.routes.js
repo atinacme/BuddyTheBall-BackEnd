@@ -17,5 +17,5 @@ module.exports = function (app) {
 
     app.put("/api/updateRegion/:id", controller.updateRegion);
 
-    app.delete("/api/deleteRegion/:id", controller.deleteRegion);
+    app.delete("/api/deleteRegion", controller.deleteRegion);
 };

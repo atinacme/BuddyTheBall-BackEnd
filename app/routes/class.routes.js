@@ -18,4 +18,6 @@ module.exports = function (app) {
     app.put("/api/updateClass/:id", controller.updateClass);
 
     app.post("/api/getCoachClasses", controller.getCoachClasses);
+
+    app.delete("/api/deleteClass", controller.deleteClass);
 };

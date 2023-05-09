@@ -22,4 +22,6 @@ module.exports = function (app) {
     app.get("/api/getScheduleCreatedByUserId/:id", controller.getScheduleCreatedByUserId);
 
     app.post("/api/getScheduleByCoach", controller.getScheduleByCoach);
+
+    app.delete("/api/deleteSchedule", controller.deleteSchedule);
 };
