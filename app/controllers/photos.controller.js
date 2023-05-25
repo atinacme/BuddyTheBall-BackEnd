@@ -239,15 +239,19 @@ const getAwardPhotos = async (req, res) => {
 
             files.map(file => {
                 if (file.contentType === "image/jpeg" || file.contentType === "image/png" || file.contentType === "image/svg+xml") {
-                    file.isImage = true
+                    // file.isImage = true
+                    bucket.openDownloadStreamByName(file.filename).pipe(res);
                 } else {
-                    file.isImage = false
+                    // file.isImage = false
+                    res.status(404).json({
+                        err: "Not an image"
+                    })
                 }
             })
-            res.status(200).json({
-                success: true,
-                files
-            })
+            // res.status(200).json({
+            //     success: true,
+            //     files
+            // })
         })
         // let downloadStream = bucket.openDownloadStreamByName();
         // var fileInfos = [];
