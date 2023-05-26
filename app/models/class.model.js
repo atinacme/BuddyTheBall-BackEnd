@@ -14,6 +14,7 @@ const Class = mongoose.model(
             type: mongoose.Schema.Types.ObjectId,
             ref: "School"
         },
+        topic: String,
         time: { type: Date, default: Date.now }
     })
 );

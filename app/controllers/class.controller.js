@@ -12,7 +12,8 @@ const createClass = async (req, res) => {
             created_by_name: req.body.created_by_name,
             created_by_user_id: req.body.created_by_user_id,
             schedules: req.body.schedules,
-            school: req.body.school
+            school: req.body.school,
+            topic: req.body.topic
         });
         Classes.save(Classes);
         School.findByIdAndUpdate(req.body.school, {
@@ -137,7 +138,8 @@ const updateClass = async (req, res) => {
     try {
         var classes = {
             schedules: req.body.schedules,
-            school: req.body.school
+            school: req.body.school,
+            topic: req.body.topic
         };
         Class.findByIdAndUpdate(classId, classes)
             .then(data => {

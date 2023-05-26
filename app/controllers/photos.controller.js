@@ -223,57 +223,26 @@ const getParticularCustomerPhotos = async (req, res) => {
 
 const getAwardPhotos = async (req, res) => {
     try {
-        await mongoClient.connect();
+        var fileInfos = [];
+        var photos = await Photos.find({ upload_for: 'award' });
 
-        const database = mongoClient.db(dbConfig.database);
-        const bucket = new GridFSBucket(database, {
-            bucketName: dbConfig.imgBucket,
+        if ((photos.length) === 0) {
+            return res.status(500).send({
+                message: "No files found!",
+            });
+        }
+
+        photos.forEach((doc) => {
+            fileInfos.push({
+                _id: doc._id,
+                photo_id: doc.photo_id,
+                originalname: doc.originalname,
+                name: doc.originalname.replace(".png", ""),
+                url: baseUrl + doc.filename,
+                messages: doc.messages
+            });
         });
-        bucket.find().toArray((err, files) => {
-            if (!files || files.length == 0) {
-                return res.status(200).json({
-                    success: false,
-                    message: "No files available"
-                })
-            }
-
-            files.map(file => {
-                if (file.contentType === "image/jpeg" || file.contentType === "image/png" || file.contentType === "image/svg+xml") {
-                    // file.isImage = true
-                    bucket.openDownloadStreamByName(file.filename).pipe(res);
-                } else {
-                    // file.isImage = false
-                    res.status(404).json({
-                        err: "Not an image"
-                    })
-                }
-            })
-            // res.status(200).json({
-            //     success: true,
-            //     files
-            // })
-        })
-        // let downloadStream = bucket.openDownloadStreamByName();
-        // var fileInfos = [];
-        // var photos = await Photos.find({ upload_for: 'award' });
-
-        // if ((photos.length) === 0) {
-        //     return res.status(500).send({
-        //         message: "No files found!",
-        //     });
-        // }
-
-        // photos.forEach((doc) => {
-        //     fileInfos.push({
-        //         _id: doc._id,
-        //         photo_id: doc.photo_id,
-        //         originalname: doc.originalname,
-        //         name: doc.originalname.replace(".png", ""),
-        //         url: baseUrl + doc.filename,
-        //         messages: doc.messages
-        //     });
-        // });
-        // return res.status(200).send(fileInfos);
+        return res.status(200).send(fileInfos);
     } catch (error) {
         return res.status(500).send({
             message: error.message,
