@@ -4,7 +4,6 @@ const Customer = db.customer;
 
 const createAndUpdateAttendance = async (req, res) => {
     try {
-        console.log("gasv--->", req.body.child_id, req.body.session_id);
         const check = await Attendance.find({ child_id: req.body.child_id, session_id: req.body.session_id });
         if (check.length > 0) {
             console.log("come update");

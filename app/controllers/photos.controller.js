@@ -100,7 +100,6 @@ const uploadCustomerPhotos = async (req, res) => {
                 }).clone();
             }
         } else if (req.body.file_type === "award") {
-            console.log("sdgxsg");
             req.files.forEach(element => {
                 const customerPhotos = new Photos({
                     photo_id: element.id,

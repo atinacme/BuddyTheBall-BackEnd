@@ -26,7 +26,8 @@ const School = mongoose.model(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Class"
             }
-        ]
+        ],
+        time: { type: Date, default: Date.now }
     })
 );
 

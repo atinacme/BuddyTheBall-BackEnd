@@ -18,6 +18,7 @@ db.attendance = require("./attendance.model");
 db.region = require("./region.model");
 db.schedule = require("./schedule.model");
 db.class = require("./class.model");
+db.awards = require("./awards.model");
 db.dbConfig = require("../config/db.config");
 db.ROLES = ["customer", "superadmin", "coach", "regionalmanager"];
 
