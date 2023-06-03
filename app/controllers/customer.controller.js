@@ -55,6 +55,7 @@ exports.findParticularCustomer = (req, res) => {
         .populate("children_data.class", "-__v")
         .populate("children_data.coach", "-__v")
         .populate("children_data.schedule", "-__v")
+        .populate("children_data.current_award", "-__v")
         .populate("coach", "-__v")
         .populate([{
             path: 'children_data.class',

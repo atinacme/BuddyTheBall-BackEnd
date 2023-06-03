@@ -26,10 +26,10 @@ exports.signup = (req, res) => {
             if (req.body.roles[0] === "customer") {
                 var children_data = [];
                 req.body.children_data.forEach(element => {
-                    const current_award = {
-                        name: element.current_award ? element.current_award.name : null,
-                        image: element.current_award ? element.current_award.image : null
-                    };
+                    // const current_award = {
+                    //     name: element.current_award ? element.current_award.name : null,
+                    //     image: element.current_award ? element.current_award.image : null
+                    // };
                     children_data.push({
                         player_name: element.player_name,
                         player_age: element.player_age,
@@ -38,7 +38,7 @@ exports.signup = (req, res) => {
                         handed: element.handed,
                         num_buddy_books_read: element.num_buddy_books_read,
                         jersey_size: element.jersey_size ? element.jersey_size : null,
-                        current_award: current_award
+                        current_award: element.current_award
                     });
                 });
                 const customer = new Customer({
