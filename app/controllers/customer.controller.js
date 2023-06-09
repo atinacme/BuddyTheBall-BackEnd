@@ -6,15 +6,31 @@ const Customer = db.customer;
 exports.getCustomers = (req, res) => {
     Customer.find()
         .populate("children_data.school", "-__v")
+        .populate("children_data.class", "-__v")
+        .populate("children_data.coach", "-__v")
+        .populate("children_data.schedule", "-__v")
+        .populate("children_data.current_award", "-__v")
         .populate("coach", "-__v")
-        .then(data => {
+        .populate([{
+            path: 'children_data.class',
+            populate: {
+                path: 'schedules',
+                model: 'Schedule',
+                populate: {
+                    path: 'coaches',
+                    model: 'Coach'
+                },
+            }
+        }, {
+            path: 'children_data.class',
+            populate: {
+                path: 'school',
+                model: 'School'
+            },
+        }])
+        .exec(function (err, data) {
+            if (err) return res.status(404).send({ message: "Not found Customer with id " + id });
             res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving customers."
-            });
         });
 };
 
