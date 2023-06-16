@@ -11,6 +11,8 @@ module.exports = function (app) {
 
     app.post("/api/uploadCustomerPhotos", controller.uploadCustomerPhotos);
 
+    app.get("/api/getAllSchoolPhotos", controller.getAllSchoolPhotos);
+
     app.get("/api/getParticularSchoolPhotos/:id", controller.getParticularSchoolPhotos);
 
     app.get("/api/getAwardPhotos", controller.getAwardPhotos);

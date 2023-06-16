@@ -126,11 +126,11 @@ const updateSchedule = async (req, res) => {
             end_time: req.body.end_time,
             topic: req.body.topic
         };
-        Schedule.findByIdAndUpdate(scheduleId, schedule)
+        Schedule.findByIdAndUpdate(scheduleId, req.body, { useFindAndModify: false })
             .then(data => {
                 if (!data) {
                     console.log(`Cannot update Schedule with id=${scheduleId}`);
-                } else res.status(200).send("User Coach was updated successfully.");
+                } else res.status(200).send("Schedule updated successfully.");
             });
     } catch (error) {
         console.log(error);

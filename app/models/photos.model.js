@@ -5,6 +5,14 @@ const Photos = mongoose.model(
     new mongoose.Schema({
         user_id: String,
         customer_id: String,
+        class_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Class"
+        },
+        schedule_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Schedule"
+        },
         school_id: String,
         coach_id: String,
         photo_id: String,

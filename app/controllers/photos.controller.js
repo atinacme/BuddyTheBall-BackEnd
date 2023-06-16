@@ -4,6 +4,7 @@ const db = require("../models");
 const Coach = db.coach;
 const Customer = db.customer;
 const Photos = db.photos;
+const School = db.school;
 const RegionalManager = db.regionalmanager;
 const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
@@ -123,6 +124,8 @@ const uploadCustomerPhotos = async (req, res) => {
                     customer_id: req.body.customer_id,
                     school_id: req.body.school_id,
                     coach_id: req.body.coach_id,
+                    class_id: req.body.class_id,
+                    schedule_id: req.body.schedule_id,
                     photo_id: element.id,
                     fieldname: element.fieldname,
                     originalname: element.originalname,
@@ -154,10 +157,73 @@ const uploadCustomerPhotos = async (req, res) => {
     }
 };
 
+const getAllSchoolPhotos = async (req, res) => {
+    try {
+        var school_photos = []
+        School.find()
+            .then(data => {
+                if (!data)
+                    res.status(404).send({ message: "Can't send message with Photo id " + id });
+                else {
+                    data.forEach(v => {
+                        var fileInfos = [];
+                        Photos.find({ school_id: v._id }).populate("class_id", "-__v").populate("schedule_id", "-__v")
+                            .then(photos => {
+                                if (!photos)
+                                    res.status(404).send({ message: "Can't send message with Photo id " + id });
+                                else {
+
+                                    if ((photos.length) === 0) {
+                                        return res.status(500).send({
+                                            message: "No files found!",
+                                        });
+                                    }
+
+                                    photos.forEach((doc) => {
+                                        fileInfos.push({
+                                            _id: doc._id,
+                                            user_id: doc.user_id,
+                                            customer_id: doc.customer_id,
+                                            school_id: doc.school_id,
+                                            coach_id: doc.coach_id,
+                                            class_id: doc.class_id,
+                                            schedule_id: doc.schedule_id,
+                                            photo_id: doc.photo_id,
+                                            originalname: doc.originalname,
+                                            name: doc.filename,
+                                            url: baseUrl + doc.filename,
+                                            messages: doc.messages
+                                        });
+                                    });
+
+                                    school_photos.push({
+                                        _id: v._id,
+                                        school_name: v.school_name,
+                                        region: v.region,
+                                        photos: fileInfos
+                                    })
+                                    return res.status(200).send(school_photos);
+                                }
+                            })
+                            .catch(err => {
+                                res
+                                    .status(500)
+                                    .send({ message: "Error sending message with Photo id=" + id });
+                            });
+                    })
+                }
+            })
+    } catch (error) {
+        return res.status(500).send({
+            message: error.message,
+        });
+    }
+};
+
 const getParticularSchoolPhotos = async (req, res) => {
     try {
         var fileInfos = [];
-        var photos = await Photos.find({ school_id: req.params.id });
+        var photos = await Photos.find({ school_id: req.params.id }).populate("class_id", "-__v").populate("schedule_id", "-__v")
 
         if ((photos.length) === 0) {
             return res.status(500).send({
@@ -172,6 +238,8 @@ const getParticularSchoolPhotos = async (req, res) => {
                 customer_id: doc.customer_id,
                 school_id: doc.school_id,
                 coach_id: doc.coach_id,
+                class_id: doc.class_id,
+                schedule_id: doc.schedule_id,
                 photo_id: doc.photo_id,
                 originalname: doc.originalname,
                 name: doc.filename,
@@ -323,6 +391,7 @@ const download = async (req, res) => {
 
 module.exports = {
     uploadCustomerPhotos,
+    getAllSchoolPhotos,
     getParticularSchoolPhotos,
     getAwardPhotos,
     updateCustomerPhotosOnMessage,

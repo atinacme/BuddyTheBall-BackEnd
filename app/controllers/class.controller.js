@@ -79,6 +79,27 @@ const getClasses = async (req, res) => {
     }
 };
 
+const getParticularClass = async (req, res) => {
+    try {
+        Class.findById(req.params.id)
+            .populate("schedules", "-__v")
+            .populate("school", "-__v")
+            .populate({
+                path: 'schedules',
+                populate: {
+                    path: 'coaches',
+                    model: 'Coach'
+                }
+            })
+            .exec(function (err, data) {
+                if (err) return res.status(404).send({ message: "Not found Class " });
+                res.send(data);
+            });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const getClassCreatedByUserId = async (req, res) => {
     try {
         Class.find({ created_by_user_id: req.body.created_by_user_id }).populate("schedules", "-__v").populate("school", "-__v").exec(function (err, docs) {
@@ -177,6 +198,7 @@ const deleteClass = async (req, res) => {
 module.exports = {
     createClass,
     getClasses,
+    getParticularClass,
     getClassCreatedByUserId,
     getCoachClasses,
     getScheduleByCoach,

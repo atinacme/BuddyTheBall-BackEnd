@@ -13,6 +13,8 @@ module.exports = function (app) {
 
     app.get("/api/getClasses", controller.getClasses);
 
+    app.get("/api/getParticularClass/:id", controller.getParticularClass);
+
     app.post("/api/getClassCreatedByUserId", controller.getClassCreatedByUserId);
 
     app.put("/api/updateClass/:id", controller.updateClass);
