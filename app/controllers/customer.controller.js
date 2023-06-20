@@ -128,7 +128,9 @@ exports.updateCustomer = (req, res) => {
                             res.status(404).send({
                                 message: `Cannot update Customer with id=${customerId}. Maybe Customer was not found!`
                             });
-                        } else res.send({ message: "User Customer was updated successfully." });
+                        } else {
+                            res.send({ message: "User Customer was updated successfully." });
+                        }
                     })
                     .catch(err => {
                         res.status(500).send({

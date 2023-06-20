@@ -14,18 +14,27 @@ const transporter = nodemailer.createTransport({
 exports.sendEmailService = (send_to, subject, message, filename, path) => {
 
     return new Promise((resolve, reject) => {
-
-        const email_message = {
-            from: process.env.SMTP_USER,
-            to: send_to,
-            subject: subject,
-            text: message,
-            attachments: [{
-                filename: filename,
-                path: path,
-                contentType: "application/pdf"
-            }]
-        };
+        var email_message;
+        if (filename !== null && path !== null) {
+            email_message = {
+                from: process.env.SMTP_USER,
+                to: send_to,
+                subject: subject,
+                text: message,
+                attachments: [{
+                    filename: filename,
+                    path: path,
+                    contentType: "application/pdf"
+                }]
+            };
+        } else {
+            email_message = {
+                from: process.env.SMTP_USER,
+                to: send_to,
+                subject: subject,
+                text: message
+            };
+        }
 
         transporter.sendMail(email_message).then((v) => {
             resolve(true);

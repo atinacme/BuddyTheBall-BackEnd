@@ -2,6 +2,7 @@ const config = require("../config/auth.config");
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 const db = require("../models");
+const { sendEmailService } = require("../middlewares/sendEmailService");
 const User = db.user;
 const Role = db.role;
 const Customer = db.customer;
@@ -64,7 +65,7 @@ exports.signup = (req, res) => {
                             schoolsList.push(data.school);
                         })
                     });
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         const school_arr = schoolsList.filter((item, index) => schoolsList.indexOf(item) === index);
                         school_arr.forEach(v => {
                             School.findByIdAndUpdate(v, {
@@ -74,6 +75,7 @@ exports.signup = (req, res) => {
                             })
                                 .then();
                         });
+                        await sendEmailService(req.body.email, 'Customer Credentials for Buddy The Ball', `Hi ${req.body.parent_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                     }, 1000)
                 });
             }
@@ -92,7 +94,7 @@ exports.signup = (req, res) => {
                     favorite_drill: req.body.favorite_drill
                 });
 
-                coach.save((err, coach) => {
+                coach.save(async (err, coach) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
@@ -128,6 +130,7 @@ exports.signup = (req, res) => {
                                         .then();
                                 }));
                         });
+                        await sendEmailService(req.body.email, 'Coach Credentials for Buddy The Ball', `Hi ${req.body.coach_name}, Email: ${req.body.email} and Password: ${req.body.password} are your login credentials`, null, null);
                     }
                 });
             }
@@ -140,11 +143,12 @@ exports.signup = (req, res) => {
                     assigned_region: req.body.assigned_region
                 });
 
-                regionalmanager.save((err, regionalmanager) => {
+                regionalmanager.save(async (err, regionalmanager) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
+                    await sendEmailService(req.body.email, 'Regional Manager Credentials for Buddy The Ball', `Hi ${req.body.regional_manager_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             }
             Role.find(
@@ -314,5 +318,92 @@ exports.signin = (req, res) => {
                     accessToken: token
                 });
             }
+        });
+};
+
+exports.forgotPassword = (req, res) => {
+    User.find({ email: req.body.email }).populate("roles", "-__v")
+        .then(data => {
+            if (!data)
+                res.status(404).send({ message: "Not found User with id " + id });
+            else {
+                if (data[0].roles[0].name === "customer") {
+                    Customer.find({ email: req.body.email })
+                        .then(async data => {
+                            if (!data)
+                                res.status(404).send({ message: "Not found Customer with School id " + id });
+                            else {
+                                await sendEmailService(req.body.email, 'Forgot Password Customer Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
+                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                            }
+                        })
+                        .catch(err => {
+                            res
+                                .status(500)
+                                .send({ message: "Error retrieving Customer with School id=" + id });
+                        });
+                } else if (data[0].roles[0].name === "coach") {
+                    Coach.find({ email: req.body.email })
+                        .then(async data => {
+                            if (!data)
+                                res.status(404).send({ message: "Not found Customer with School id " + id });
+                            else {
+                                await sendEmailService(req.body.email, 'Forgot Password Coach Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
+                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                            }
+                        })
+                        .catch(err => {
+                            res
+                                .status(500)
+                                .send({ message: "Error retrieving Customer with School id=" + id });
+                        });
+                } else if (data[0].roles[0].name === "regionalmanager") {
+                    RegionalManager.find({ email: req.body.email })
+                        .then(async data => {
+                            if (!data)
+                                res.status(404).send({ message: "Not found Customer with School id " + id });
+                            else {
+                                await sendEmailService(req.body.email, 'Forgot Password Regional Manager Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
+                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                            }
+                        })
+                        .catch(err => {
+                            res
+                                .status(500)
+                                .send({ message: "Error retrieving Customer with School id=" + id });
+                        });
+                } else {
+                    res.status(200).send({ email: req.body.email, role: data[0].roles[0].name, user_id: data[0]._id })
+                }
+            }
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({ message: "Error retrieving User with id=" + id });
+        });
+};
+
+exports.resetPassword = (req, res) => {
+    if (!req.body) {
+        return res.status(400).send({
+            message: "Data to update can not be empty!"
+        });
+    }
+    const userId = req.body.userId;
+    const password = bcrypt.hashSync(req.body.password, 8);
+
+    User.findByIdAndUpdate(userId, { password: password }, { useFindAndModify: false })
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot update User with id=${userId}. Maybe User was not found!`
+                });
+            } else res.send({ message: "Password Updated Successfully!" });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating User with id=" + userId
+            });
         });
 };
