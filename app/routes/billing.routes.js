@@ -9,5 +9,5 @@ module.exports = function (app) {
         next();
     });
 
-    app.get("/api/billingEmail", controller.billingEmail);
+    app.post("/api/billingEmail", controller.billingEmail);
 };

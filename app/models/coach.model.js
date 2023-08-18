@@ -36,6 +36,7 @@ const Coach = mongoose.model(
             }
         ],
         assigned_by: String,
+        assigned_by_name: String,
         assigned_by_user_id: String,
         assign_slot: Array,
         favorite_pro_player: String,

@@ -13,12 +13,8 @@ const Schedule = mongoose.model(
         date: String,
         start_time: String,
         end_time: String,
-        school: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "School"
-        },
         topic: String,
-        status: { type: String, default: 'Upcoming' },
+        status: String,
         time: { type: Date, default: Date.now }
     })
 );

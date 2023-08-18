@@ -8,6 +8,7 @@ db.mongoose = mongoose;
 db.user = require("./user.model");
 db.role = require("./role.model");
 db.school = require("./school.model");
+db.superadmin = require("./superadmin.model");
 db.coach = require("./coach.model");
 db.customer = require("./customer.model");
 db.regionalmanager = require("./regionalmanager.model");

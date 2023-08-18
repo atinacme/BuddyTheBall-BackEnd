@@ -193,7 +193,7 @@ exports.deleteCustomer = (req, res) => {
                                 message: "Customer was deleted successfully!"
                             });
                         }
-                    })
+                    });
             }
         })
         .catch(err => {

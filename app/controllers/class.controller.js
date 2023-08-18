@@ -6,7 +6,7 @@ const School = db.school;
 
 const createClass = async (req, res) => {
     try {
-        var coaches = []
+        var coaches = [];
         const Classes = new Class({
             created_by: req.body.created_by,
             created_by_name: req.body.created_by_name,
@@ -22,16 +22,16 @@ const createClass = async (req, res) => {
             }
         }).then();
         req.body.schedules.forEach(async v => {
-            const data = await Schedule.findById(v).populate("coaches")
+            const data = await Schedule.findById(v).populate("coaches");
             if (data) {
                 data.coaches.forEach(u => {
-                    coaches.push(u.user_id)
-                })
+                    coaches.push(u.user_id);
+                });
             }
-        })
+        });
         setTimeout(() => {
             var unique = coaches.filter((value, index, array) => {
-                return array.indexOf(value) === index
+                return array.indexOf(value) === index;
             });
             unique.forEach(v => {
                 Coach.findOneAndUpdate({ user_id: v },
@@ -48,8 +48,8 @@ const createClass = async (req, res) => {
                     .catch(err => {
                         console.log("Error updating Coach with id=" + req.body.user_id);
                     });
-            })
-        }, 1000)
+            });
+        }, 1000);
         return res.status(200).send({
             message: 'Classes Created Successfully !!'
         });

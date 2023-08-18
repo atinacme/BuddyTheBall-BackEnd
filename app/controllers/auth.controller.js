@@ -8,6 +8,7 @@ const Role = db.role;
 const Customer = db.customer;
 const School = db.school;
 const Coach = db.coach;
+const SuperAdmin = db.superadmin;
 const RegionalManager = db.regionalmanager;
 const Class = db.class;
 
@@ -63,7 +64,7 @@ exports.signup = (req, res) => {
                     req.body.children_data.forEach(element => {
                         Class.findById(element.class).then(data => {
                             schoolsList.push(data.school);
-                        })
+                        });
                     });
                     setTimeout(async () => {
                         const school_arr = schoolsList.filter((item, index) => schoolsList.indexOf(item) === index);
@@ -75,8 +76,8 @@ exports.signup = (req, res) => {
                             })
                                 .then();
                         });
-                        await sendEmailService(req.body.email, 'Customer Credentials for Buddy The Ball', `Hi ${req.body.parent_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
-                    }, 1000)
+                        await sendEmailService(req.body.email, 'Parent Credentials for Buddy The Ball', `Hi ${req.body.parent_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                    }, 1000);
                 });
             }
             if (req.body.roles[0] === "coach") {
@@ -88,6 +89,7 @@ exports.signup = (req, res) => {
                     tennis_club: req.body.tennis_club,
                     assigned_region: req.body.assigned_region,
                     assigned_by: req.body.assigned_by,
+                    assigned_by_name: req.body.assigned_by_name,
                     assigned_by_user_id: req.body.assigned_by_user_id,
                     favorite_pro_player: req.body.favorite_pro_player,
                     handed: req.body.handed,
@@ -151,6 +153,22 @@ exports.signup = (req, res) => {
                     await sendEmailService(req.body.email, 'Regional Manager Credentials for Buddy The Ball', `Hi ${req.body.regional_manager_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             }
+            if (req.body.roles[0] === "superadmin") {
+                const superadmin = new SuperAdmin({
+                    user_id: user._id,
+                    email: req.body.email,
+                    password: req.body.password,
+                    super_admin_name: req.body.super_admin_name
+                });
+
+                superadmin.save(async (err, superadmin) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    await sendEmailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi ${req.body.super_admin_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                });
+            }
             Role.find(
                 {
                     name: { $in: req.body.roles }
@@ -162,7 +180,7 @@ exports.signup = (req, res) => {
                     }
 
                     user.roles = roles.map(role => role._id);
-                    user.save(err => {
+                    user.save(async (err, usr) => {
                         if (err) {
                             res.status(500).send({ message: err });
                             return;
@@ -180,13 +198,14 @@ exports.signup = (req, res) => {
                 }
 
                 user.roles = [role._id];
-                user.save(err => {
+                user.save(async (err, usr) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
 
                     res.send({ message: "User was registered successfully!" });
+                    await sendEmailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi Super Admin, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             });
         }
@@ -310,13 +329,30 @@ exports.signin = (req, res) => {
                         });
                     });
             } else {
-                res.status(200).send({
-                    id: user._id,
-                    username: user.username,
-                    email: user.email,
-                    roles: authorities,
-                    accessToken: token
-                });
+                SuperAdmin.findOne({
+                    email: req.body.email
+                })
+                    .exec((err, superadmin_data) => {
+                        if (err) {
+                            res.status(500).send({ message: err });
+                        }
+                        return res.status(200).send({
+                            id: user._id,
+                            username: user.username,
+                            email: user.email,
+                            roles: authorities,
+                            status: 200,
+                            superadmin_data: superadmin_data,
+                            accessToken: token
+                        });
+                    });
+                // res.status(200).send({
+                //     id: user._id,
+                //     username: user.username,
+                //     email: user.email,
+                //     roles: authorities,
+                //     accessToken: token
+                // });
             }
         });
 };
@@ -334,7 +370,7 @@ exports.forgotPassword = (req, res) => {
                                 res.status(404).send({ message: "Not found Customer with School id " + id });
                             else {
                                 await sendEmailService(req.body.email, 'Forgot Password Customer Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
-                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                                res.status(200).send("Email with your Login Credentials Send to the Email");
                             }
                         })
                         .catch(err => {
@@ -349,7 +385,7 @@ exports.forgotPassword = (req, res) => {
                                 res.status(404).send({ message: "Not found Customer with School id " + id });
                             else {
                                 await sendEmailService(req.body.email, 'Forgot Password Coach Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
-                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                                res.status(200).send("Email with your Login Credentials Send to the Email");
                             }
                         })
                         .catch(err => {
@@ -364,7 +400,7 @@ exports.forgotPassword = (req, res) => {
                                 res.status(404).send({ message: "Not found Customer with School id " + id });
                             else {
                                 await sendEmailService(req.body.email, 'Forgot Password Regional Manager Credentials for Buddy The Ball', `Email: ${req.body.email} and password: ${data[0].password} are your login credentials`, null, null);
-                                res.status(200).send("Email with your Login Credentials Send to the Email")
+                                res.status(200).send("Email with your Login Credentials Send to the Email");
                             }
                         })
                         .catch(err => {
@@ -373,7 +409,7 @@ exports.forgotPassword = (req, res) => {
                                 .send({ message: "Error retrieving Customer with School id=" + id });
                         });
                 } else {
-                    res.status(200).send({ email: req.body.email, role: data[0].roles[0].name, user_id: data[0]._id })
+                    res.status(200).send({ email: req.body.email, role: data[0].roles[0].name, user_id: data[0]._id });
                 }
             }
         })
