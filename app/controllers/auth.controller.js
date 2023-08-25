@@ -28,10 +28,6 @@ exports.signup = (req, res) => {
             if (req.body.roles[0] === "customer") {
                 var children_data = [];
                 req.body.children_data.forEach(element => {
-                    // const current_award = {
-                    //     name: element.current_award ? element.current_award.name : null,
-                    //     image: element.current_award ? element.current_award.image : null
-                    // };
                     children_data.push({
                         player_name: element.player_name,
                         player_age: element.player_age,

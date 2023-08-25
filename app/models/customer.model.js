@@ -30,10 +30,10 @@ const Customer = mongoose.model(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Schedule"
             },
-            current_award: {
+            current_award: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Awards"
-            },
+            }],
             attendance: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Attendance"
