@@ -6,6 +6,7 @@ const Customer = db.customer;
 const Photos = db.photos;
 const School = db.school;
 const RegionalManager = db.regionalmanager;
+const Schedule = db.schedule;
 const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
 
@@ -137,7 +138,18 @@ const uploadCustomerPhotos = async (req, res) => {
                     size: element.size,
                     upload_date: element.uploadDate
                 });
-                customerPhotos.save(customerPhotos);
+                customerPhotos.save((err, customerPhotos) => {
+                    if (err) {
+                        res.status(500).send({ message: err });
+                        return;
+                    }
+                    Schedule.findByIdAndUpdate(customerPhotos.schedule_id, { status: 'Completed' }, { useFindAndModify: false })
+                        .then(data => {
+                            if (!data) {
+                                console.log(`Cannot update Schedule with id=${v._id}`);
+                            } else console.log("Schedule updated successfully.");
+                        });
+                });
             });
         }
         return res.status(200).send({
@@ -159,7 +171,7 @@ const uploadCustomerPhotos = async (req, res) => {
 
 const getAllSchoolPhotos = async (req, res) => {
     try {
-        var school_photos = []
+        var school_photos = [];
         School.find()
             .then(data => {
                 if (!data)
@@ -201,7 +213,7 @@ const getAllSchoolPhotos = async (req, res) => {
                                         school_name: v.school_name,
                                         region: v.region,
                                         photos: fileInfos
-                                    })
+                                    });
                                     return res.status(200).send(school_photos);
                                 }
                             })
@@ -210,9 +222,9 @@ const getAllSchoolPhotos = async (req, res) => {
                                     .status(500)
                                     .send({ message: "Error sending message with Photo id=" + id });
                             });
-                    })
+                    });
                 }
-            })
+            });
     } catch (error) {
         return res.status(500).send({
             message: error.message,
@@ -223,7 +235,7 @@ const getAllSchoolPhotos = async (req, res) => {
 const getParticularSchoolPhotos = async (req, res) => {
     try {
         var fileInfos = [];
-        var photos = await Photos.find({ school_id: req.params.id }).populate("class_id", "-__v").populate("schedule_id", "-__v")
+        var photos = await Photos.find({ school_id: req.params.id }).populate("class_id", "-__v").populate("schedule_id", "-__v");
 
         if ((photos.length) === 0) {
             return res.status(500).send({
