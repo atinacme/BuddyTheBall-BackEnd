@@ -34,7 +34,7 @@ const createSchedule = async (req, res) => {
         var status;
         var local = new Date(req.body.date).toLocaleDateString();
         var newdate = local.split("/").reverse().join("-");
-        var dateStringFormat = convertDateFormat(newdate);
+        var dateStringFormat = process.env.NODE_ENV === 'production' ? convertDateFormat(newdate) : newdate;
         var timestamp = new Date(dateStringFormat).getTime() / 1000;
         var startTime = moment(req.body.start_time, ["h:mm A"]).format("HH:mm");
         var startTimeSplit = startTime.split(":");
@@ -52,7 +52,6 @@ const createSchedule = async (req, res) => {
         } else {
             status = 'Ended';
         }
-        console.log("xsxxs----->", newdate, timestamp, parsedTimeStartString, parsedCurrentDateTimeString, parsedTimeEndString, status);
         const schedule = new Schedule({
             created_by: req.body.created_by,
             created_by_name: req.body.created_by_name,

@@ -119,7 +119,7 @@ const UpdateSchedulesRegularly = async (req, res) => {
                     }
                     var local = new Date(v.date).toLocaleDateString();
                     var newdate = local.split("/").reverse().join("-");
-                    var dateStringFormat = convertDateFormat(newdate);
+                    var dateStringFormat = process.env.NODE_ENV === 'production' ? convertDateFormat(newdate) : newdate;
                     var timestamp = new Date(dateStringFormat).getTime() / 1000;
                     var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm");
                     var startTimeSplit = startTime.split(":");
