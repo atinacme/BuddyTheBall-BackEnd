@@ -100,9 +100,27 @@ const UpdateSchedulesRegularly = async (req, res) => {
                     function getDate(timestamp) {
                         return (new Date(timestamp * 1000)).getDate();
                     }
+                    function convertDateFormat(inputDate) {
+                        // Split the input date string into components
+                        var components = inputDate.split('-');
+
+                        if (components.length === 3) {
+                            var year = components[0];
+                            var day = components[1];
+                            var month = components[2];
+
+                            // Create the new date string in "YYYY-MM-DD" format
+                            var newDate = year + '-' + month + '-' + day;
+                            return newDate;
+                        } else {
+                            // Handle invalid input format
+                            return "Invalid date format";
+                        }
+                    }
                     var local = new Date(v.date).toLocaleDateString();
                     var newdate = local.split("/").reverse().join("-");
-                    var timestamp = new Date(newdate).getTime() / 1000;
+                    var dateStringFormat = convertDateFormat(newdate);
+                    var timestamp = new Date(dateStringFormat).getTime() / 1000;
                     var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm");
                     var startTimeSplit = startTime.split(":");
                     var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1]);
