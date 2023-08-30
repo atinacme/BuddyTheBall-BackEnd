@@ -84,90 +84,90 @@ function initial() {
     });
 }
 
-// const UpdateSchedulesRegularly = async (req, res) => {
-//     try {
-//         Schedule.find()
-//             // .populate("coach", "-__v")
-//             // .populate("school", "-__v")
-//             .then(data => {
-//                 data.forEach(v => {
-//                     function getYear(timestamp) {
-//                         return (new Date(timestamp * 1000)).getFullYear();
-//                     }
-//                     function getMon(timestamp) {
-//                         return (new Date(timestamp * 1000)).getMonth();
-//                     }
-//                     function getDate(timestamp) {
-//                         return (new Date(timestamp * 1000)).getDate();
-//                     }
-//                     var local = new Date(v.date).toLocaleDateString();
-//                     var newdate = local.split("/").reverse().join("-");
-//                     var timestamp = new Date(newdate).getTime() / 1000;
-//                     var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm");
-//                     var startTimeSplit = startTime.split(":");
-//                     var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1]);
-//                     var parsedTimeStartString = Date.parse(dateTimeStartString);
-//                     var endTime = moment(v.end_time, ["h:mm A"]).format("HH:mm");
-//                     var endTimeSplit = endTime.split(":");
-//                     var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1]);
-//                     var parsedTimeEndString = Date.parse(dateTimeEndString);
-//                     var parsedCurrentDateTimeString = Date.parse(moment().utcOffset("+05:30").format());
-//                     if (v.status !== 'Completed') {
-//                         if (parsedCurrentDateTimeString >= parsedTimeStartString && parsedCurrentDateTimeString <= parsedTimeEndString) {
-//                             var schedule = {
-//                                 status: 'Incomplete'
-//                             };
-//                             Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
-//                                 .then(data => {
-//                                     if (!data) {
-//                                         console.log(`Cannot update Schedule with id=${v._id}`);
-//                                     } else console.log("Schedule updated successfully.");
-//                                 });
-//                         } else if (parsedCurrentDateTimeString <= parsedTimeStartString) {
-//                             var schedule = {
-//                                 status: 'Upcoming'
-//                             };
-//                             Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
-//                                 .then(data => {
-//                                     if (!data) {
-//                                         console.log(`Cannot update Schedule with id=${v._id}`);
-//                                     } else console.log("Schedule updated successfully.");
-//                                 });
-//                         } else {
-//                             var schedule = {
-//                                 status: 'Ended'
-//                             };
-//                             Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
-//                                 .then(data => {
-//                                     if (!data) {
-//                                         console.log(`Cannot update Schedule with id=${v._id}`);
-//                                     } else console.log("Schedule updated successfully.");
-//                                 });
-//                         }
-//                     }
-//                 });
-//             })
-//             .catch(err => {
-//                 console.log(err);
-//             });
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
+const UpdateSchedulesRegularly = async (req, res) => {
+    try {
+        Schedule.find()
+            // .populate("coach", "-__v")
+            // .populate("school", "-__v")
+            .then(data => {
+                data.forEach(v => {
+                    function getYear(timestamp) {
+                        return (new Date(timestamp * 1000)).getFullYear();
+                    }
+                    function getMon(timestamp) {
+                        return (new Date(timestamp * 1000)).getMonth();
+                    }
+                    function getDate(timestamp) {
+                        return (new Date(timestamp * 1000)).getDate();
+                    }
+                    var local = new Date(v.date).toLocaleDateString();
+                    var newdate = local.split("/").reverse().join("-");
+                    var timestamp = new Date(newdate).getTime() / 1000;
+                    var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm");
+                    var startTimeSplit = startTime.split(":");
+                    var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1]);
+                    var parsedTimeStartString = Date.parse(dateTimeStartString);
+                    var endTime = moment(v.end_time, ["h:mm A"]).format("HH:mm");
+                    var endTimeSplit = endTime.split(":");
+                    var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1]);
+                    var parsedTimeEndString = Date.parse(dateTimeEndString);
+                    var parsedCurrentDateTimeString = Date.parse(moment().utcOffset("+05:30").format());
+                    if (v.status !== 'Completed') {
+                        if (parsedCurrentDateTimeString >= parsedTimeStartString && parsedCurrentDateTimeString <= parsedTimeEndString) {
+                            var schedule = {
+                                status: 'Incomplete'
+                            };
+                            Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
+                                .then(data => {
+                                    if (!data) {
+                                        console.log(`Cannot update Schedule with id=${v._id}`);
+                                    } else console.log("Schedule updated successfully.");
+                                });
+                        } else if (parsedCurrentDateTimeString <= parsedTimeStartString) {
+                            var schedule = {
+                                status: 'Upcoming'
+                            };
+                            Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
+                                .then(data => {
+                                    if (!data) {
+                                        console.log(`Cannot update Schedule with id=${v._id}`);
+                                    } else console.log("Schedule updated successfully.");
+                                });
+                        } else {
+                            var schedule = {
+                                status: 'Ended'
+                            };
+                            Schedule.findByIdAndUpdate(v._id, schedule, { useFindAndModify: false })
+                                .then(data => {
+                                    if (!data) {
+                                        console.log(`Cannot update Schedule with id=${v._id}`);
+                                    } else console.log("Schedule updated successfully.");
+                                });
+                        }
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } catch (error) {
+        console.log(error);
+    }
+};
 
-// function UpdateSchedule() {
-//     let interval;
-//     if (interval) {
-//         clearInterval(interval);
-//     }
-//     interval = setInterval(() => {
-//         UpdateSchedulesRegularly().then(() => {
-//             console.log("Schedules Updated");
-//         });
-//     }, 5000);
-// }
+function UpdateSchedule() {
+    let interval;
+    if (interval) {
+        clearInterval(interval);
+    }
+    interval = setInterval(() => {
+        UpdateSchedulesRegularly().then(() => {
+            console.log("Schedules Updated");
+        });
+    }, 5000);
+}
 
-// UpdateSchedule();
+UpdateSchedule();
 
 // simple route
 app.get("/", (req, res) => {

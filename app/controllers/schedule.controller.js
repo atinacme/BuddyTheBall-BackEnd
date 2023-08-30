@@ -34,6 +34,7 @@ const createSchedule = async (req, res) => {
         } else {
             status = 'Ended';
         }
+        console.log("xsxxs----->", status);
         const schedule = new Schedule({
             created_by: req.body.created_by,
             created_by_name: req.body.created_by_name,
