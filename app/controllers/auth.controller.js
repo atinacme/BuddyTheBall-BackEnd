@@ -18,7 +18,7 @@ exports.signup = (req, res) => {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8)
     });
-    const emailService = async () => {
+    const emailService = async (email, subject, body, filename, path) => {
         try {
             await sendEmailService(email, subject, body, filename, path);
         } catch (e) { console.log(e); }
