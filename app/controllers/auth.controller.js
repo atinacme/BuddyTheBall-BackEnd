@@ -18,6 +18,11 @@ exports.signup = (req, res) => {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8)
     });
+    const emailService = async () => {
+        try {
+            await sendEmailService(email, subject, body, filename, path);
+        } catch (e) { console.log(e); }
+    };
     user.save((err, user) => {
         if (err) {
             res.status(500).send({ message: err });
@@ -62,7 +67,7 @@ exports.signup = (req, res) => {
                             schoolsList.push(data.school);
                         });
                     });
-                    setTimeout(async () => {
+                    setTimeout(() => {
                         const school_arr = schoolsList.filter((item, index) => schoolsList.indexOf(item) === index);
                         school_arr.forEach(v => {
                             School.findByIdAndUpdate(v, {
@@ -72,7 +77,7 @@ exports.signup = (req, res) => {
                             })
                                 .then();
                         });
-                        await sendEmailService(req.body.email, 'Parent Credentials for Buddy The Ball', `Hi ${req.body.parent_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                        emailService(req.body.email, 'Parent Credentials for Buddy The Ball', `Hi ${req.body.parent_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                     }, 1000);
                 });
             }
@@ -92,7 +97,7 @@ exports.signup = (req, res) => {
                     favorite_drill: req.body.favorite_drill
                 });
 
-                coach.save(async (err, coach) => {
+                coach.save((err, coach) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
@@ -128,7 +133,7 @@ exports.signup = (req, res) => {
                                         .then();
                                 }));
                         });
-                        await sendEmailService(req.body.email, 'Coach Credentials for Buddy The Ball', `Hi ${req.body.coach_name}, Email: ${req.body.email} and Password: ${req.body.password} are your login credentials`, null, null);
+                        emailService(req.body.email, 'Coach Credentials for Buddy The Ball', `Hi ${req.body.coach_name}, Email: ${req.body.email} and Password: ${req.body.password} are your login credentials`, null, null);
                     }
                 });
             }
@@ -141,12 +146,12 @@ exports.signup = (req, res) => {
                     assigned_region: req.body.assigned_region
                 });
 
-                regionalmanager.save(async (err, regionalmanager) => {
+                regionalmanager.save((err, regionalmanager) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    await sendEmailService(req.body.email, 'Regional Manager Credentials for Buddy The Ball', `Hi ${req.body.regional_manager_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                    emailService(req.body.email, 'Regional Manager Credentials for Buddy The Ball', `Hi ${req.body.regional_manager_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             }
             if (req.body.roles[0] === "superadmin") {
@@ -157,12 +162,12 @@ exports.signup = (req, res) => {
                     super_admin_name: req.body.super_admin_name
                 });
 
-                superadmin.save(async (err, superadmin) => {
+                superadmin.save((err, superadmin) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
-                    await sendEmailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi ${req.body.super_admin_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                    emailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi ${req.body.super_admin_name}, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             }
             Role.find(
@@ -176,7 +181,7 @@ exports.signup = (req, res) => {
                     }
 
                     user.roles = roles.map(role => role._id);
-                    user.save(async (err, usr) => {
+                    user.save((err, usr) => {
                         if (err) {
                             res.status(500).send({ message: err });
                             return;
@@ -194,14 +199,14 @@ exports.signup = (req, res) => {
                 }
 
                 user.roles = [role._id];
-                user.save(async (err, usr) => {
+                user.save((err, usr) => {
                     if (err) {
                         res.status(500).send({ message: err });
                         return;
                     }
 
                     res.send({ message: "User was registered successfully!" });
-                    await sendEmailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi Super Admin, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
+                    emailService(req.body.email, 'Super Admin Credentials for Buddy The Ball', `Hi Super Admin, Email: ${req.body.email} and password: ${req.body.password} are your login credentials`, null, null);
                 });
             });
         }
