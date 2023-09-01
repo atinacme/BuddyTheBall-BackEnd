@@ -140,7 +140,7 @@ exports.deleteRegionalManager = (req, res) => {
                                 message: "Regional Manager was deleted successfully!"
                             });
                         }
-                    })
+                    });
             }
         })
         .catch(err => {
