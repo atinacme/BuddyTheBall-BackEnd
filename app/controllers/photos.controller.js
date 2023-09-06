@@ -242,8 +242,37 @@ const getParticularSchoolPhotos = async (req, res) => {
                 message: "No files found!",
             });
         }
+        await mongoClient.connect();
+        const database = mongoClient.db(dbConfig.database);
+        const gfs = new GridFSBucket(database, {
+            bucketName: dbConfig.imgBucket,
+        });
 
         photos.forEach((doc) => {
+            const file = gfs.find({ filename: doc.filename }).toArray((err, files) => {
+                if (!files || files.length === 0) {
+                    return res.status(404).json({
+                        err: "no files exist"
+                    });
+                } else {
+                    const f = files
+                        .map(file => {
+                            if (
+                                file.contentType === "image/png" ||
+                                file.contentType === "image/jpeg"
+                            ) {
+                                file.isImage = true;
+                            } else {
+                                file.isImage = false;
+                            }
+                            return file;
+                        });
+                    return f;
+                    // return res.render("index", {
+                    //     files: f
+                    // });
+                }
+            });
             fileInfos.push({
                 _id: doc._id,
                 user_id: doc.user_id,
@@ -255,7 +284,7 @@ const getParticularSchoolPhotos = async (req, res) => {
                 photo_id: doc.photo_id,
                 originalname: doc.originalname,
                 name: doc.filename,
-                url: baseUrl + doc.filename,
+                url: file,
                 messages: doc.messages
             });
         });
