@@ -273,6 +273,7 @@ const getParticularSchoolPhotos = async (req, res) => {
                     // });
                 }
             });
+            console.log("file---->", file);
             fileInfos.push({
                 _id: doc._id,
                 user_id: doc.user_id,
