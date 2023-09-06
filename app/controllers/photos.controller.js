@@ -267,6 +267,7 @@ const getParticularSchoolPhotos = async (req, res) => {
                             }
                             return file;
                         });
+                    console.log("f--->", f);
                     return f;
                     // return res.render("index", {
                     //     files: f
