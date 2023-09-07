@@ -380,7 +380,7 @@ const getAnyParticularImage = async (req, res) => {
         const db = mongoClient.db('BuddyTheBall');
         const collection = db.collection('photos.files');
         const queryFile = { filename: req.params.filename };
-        collection.find().toArray((err, data) => {
+        collection.find({}).toArray((err, data) => {
             if (err) {
                 console.error('Error fetching data:', err);
             } else {
