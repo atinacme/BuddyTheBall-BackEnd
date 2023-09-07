@@ -380,8 +380,8 @@ const getAnyParticularImage = async (req, res) => {
         const db = mongoClient.db('BuddyTheBall');
         const collection = db.collection('photos.files');
         const queryFile = { filename: req.params.filename };
-        const result = await collection.find(queryFile).toArray();
-        console.log("xcdsc---->", queryFile, result);
+        const result = await collection.find().toArray();
+        console.log("xcdsc---->", collection, queryFile, result);
         const id = mongoose.Types.ObjectId(result[0]._id);
         const collectionChunks = db.collection('photos.chunks');
         const query = { files_id: id };
