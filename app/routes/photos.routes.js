@@ -21,6 +21,8 @@ module.exports = function (app) {
 
     app.post("/api/updateCustomerPhotosOnMessage/:id", controller.updateCustomerPhotosOnMessage);
 
+    app.get("/api/getAnyParticularImage/:filename", controller.getAnyParticularImage);
+
     app.get("/api/getParticularPhoto/:id", controller.getParticularPhoto);
     // app.get("/api/files/:name", controller.download);
 };

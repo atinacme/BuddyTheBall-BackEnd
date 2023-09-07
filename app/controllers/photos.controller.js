@@ -9,6 +9,8 @@ const RegionalManager = db.regionalmanager;
 const Schedule = db.schedule;
 const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
+const Db = require('mongodb').Db;
+const mongoose = require("mongoose");
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://buddytheball-backend.herokuapp.com/api/files/" : "http://localhost:8080/api/files/";
 const uri = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
@@ -242,39 +244,8 @@ const getParticularSchoolPhotos = async (req, res) => {
                 message: "No files found!",
             });
         }
-        await mongoClient.connect();
-        const database = mongoClient.db(dbConfig.database);
-        const gfs = new GridFSBucket(database, {
-            bucketName: dbConfig.imgBucket,
-        });
 
-        photos.forEach((doc) => {
-            const file = gfs.find({ filename: doc.filename }).toArray((err, files) => {
-                if (!files || files.length === 0) {
-                    return res.status(404).json({
-                        err: "no files exist"
-                    });
-                } else {
-                    const f = files
-                        .map(file => {
-                            if (
-                                file.contentType === "image/png" ||
-                                file.contentType === "image/jpeg"
-                            ) {
-                                file.isImage = true;
-                            } else {
-                                file.isImage = false;
-                            }
-                            return file;
-                        });
-                    console.log("f--->", f);
-                    return f;
-                    // return res.render("index", {
-                    //     files: f
-                    // });
-                }
-            });
-            console.log("file---->", file);
+        photos.forEach(async (doc) => {
             fileInfos.push({
                 _id: doc._id,
                 user_id: doc.user_id,
@@ -286,7 +257,7 @@ const getParticularSchoolPhotos = async (req, res) => {
                 photo_id: doc.photo_id,
                 originalname: doc.originalname,
                 name: doc.filename,
-                url: file,
+                url: baseUrl + doc.filename,
                 messages: doc.messages
             });
         });
@@ -403,6 +374,40 @@ const updateCustomerPhotosOnMessage = (req, res) => {
         });
 };
 
+const getAnyParticularImage = async (req, res) => {
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db('BuddyTheBall');
+        const collection = db.collection('photos.files');
+        const queryFile = { filename: req.params.filename };
+        const result = await collection.find(queryFile).toArray();
+        const id = mongoose.Types.ObjectId(result[0]._id);
+        const collectionChunks = db.collection('photos.chunks');
+        const query = { files_id: id };
+        const chunks = await collectionChunks.find(query).toArray();
+        if (!chunks || chunks.length === 0) {
+            console.log("No data found");
+        }
+        let fileData = [];
+        for (let i = 0; i < chunks.length; i++) {
+            //This is in Binary JSON or BSON format, which is stored
+            //in fileData array in base64 endocoded string format
+            fileData.push(chunks[i].data.toString('base64'));
+        }
+
+        //Display the chunks using the data URI format
+        var finalFile = "data:" + result[0].contentType + ";base64," + fileData.join("");
+        return res.status(200).send(finalFile);
+    } catch (error) {
+        return res.status(500).send({
+            message: error.message,
+        });
+    }
+    finally {
+        await mongoClient.close();
+    }
+};
+
 const download = async (req, res) => {
     try {
         await mongoClient.connect();
@@ -439,5 +444,6 @@ module.exports = {
     getAwardPhotos,
     updateCustomerPhotosOnMessage,
     getParticularPhoto,
+    getAnyParticularImage,
     getParticularCustomerPhotos
 };
