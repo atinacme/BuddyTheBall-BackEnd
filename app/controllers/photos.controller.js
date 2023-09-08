@@ -397,8 +397,8 @@ const getAnyParticularImage = async (req, res) => {
         }
 
         //Display the chunks using the data URI format
-        var finalFile = "data:" + result[0].contentType + ";base64," + fileData.join("");
-        return res.status(200).send(finalFile);
+        var finalFile = fileData.join("");
+        return res.status(200).send({ file: finalFile, contentType: result[0].contentType });
     } catch (error) {
         return res.status(500).send({
             message: error.message,
